@@ -59,8 +59,16 @@ router.get("/:id", auth, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   try {
+    const userInfo = req.user;
+    if (!userInfo.isAdmin) {
+      return handleError(
+        res,
+        403,
+        "Authorization Error: Only the user who created the business card or admin can delete this card"
+      );
+    }
     let users = await getUsers();
     res.send(users);
   } catch (error) {
