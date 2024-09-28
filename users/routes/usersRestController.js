@@ -5,6 +5,8 @@ const {
   getUsers,
   loginUser,
   updateUser,
+  changeBusinessStatus,
+  deleteUser,
 } = require("../models/usersAccessDataService");
 const auth = require("../../auth/authService");
 const { handleError } = require("../../utils/handleErrors");
@@ -85,11 +87,11 @@ router.put("/:id", auth, async (req, res) => {
     const userInfo = req.user;
     const { id } = req.params;
     const updatedUser = req.body;
-    if (userInfo._id !== id && !userInfo.isAdmin) {
+    if (userInfo._id !== id) {
       return handleError(
         res,
         403,
-        "Authorization Error: Only the same user or admin can update user info"
+        "Authorization Error: Only the same user can update user info"
       );
     }
     const error = userUpdateValidation(req.body);
@@ -98,6 +100,34 @@ router.put("/:id", auth, async (req, res) => {
     res.send(user);
   } catch (error) {
     return handleError(res, error.status || 400, error.message);
+  }
+});
+
+router.patch("/:id", auth, async (req, res) => {
+  try {
+    const userInfo = req.user;
+    const { id } = req.params;
+    if (userInfo._id !== id) {
+      return handleError(res, 403, "Authorization Error: Only the same user can change business status");
+    }
+    const user = await changeBusinessStatus(id);
+    res.send(user);
+  } catch (error) {
+    return handleError(res, error.status || 400, error.message);
+  }
+});
+
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const userInfo = req.user;
+    const { id } = req.params;
+    if (userInfo._id !== id && !userInfo.isAdmin) {
+      return handleError(res, 403, "Authorization Error: Only the same user or admin can delete user");
+    }
+    const user = await deleteUser(id);
+    res.send(user);
+  } catch (error) {
+    handleError(res, error.status || 400, error.message);
   }
 });
 
