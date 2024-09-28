@@ -57,4 +57,15 @@ const loginUser = async (email, password) => {
   }
 };
 
-module.exports = { registerUser, getUser, getUsers, loginUser };
+const updateUser = async (userId, updatedUser) => {
+  try {
+    let user = await User.findByIdAndUpdate(userId, updatedUser, { new: true });
+    return user;
+  } catch (error) {
+    return createError("Mongoose", error);
+  }
+}
+
+
+
+module.exports = { registerUser, getUser, getUsers, loginUser, updateUser };
