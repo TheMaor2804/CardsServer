@@ -20,12 +20,10 @@ router.post("/", auth, async (req, res) => {
     if (!userInfo.isBusiness) {
       return handleError(res, 403, "Only business user can create new card");
     }
-
     const errorMessage = validateCard(req.body);
     if (errorMessage !== "") {
       return handleError(res, 400, "Validation error: " + errorMessage);
     }
-
     let card = await normalizeCard(req.body, userInfo._id);
     card = await createCard(card);
     res.status(201).send(card);
@@ -49,8 +47,8 @@ router.get("/my-cards", auth, async (req, res) => {
     if (!userInfo.isBusiness) {
       return handleError(res, 403, "Only business user can get my card");
     }
-    let card = await getMyCards(userInfo._id);
-    res.send(card);
+    let cards = await getMyCards(userInfo._id);
+    res.send(cards);
   } catch (error) {
     handleError(res, error.status || 400, error.message);
   }
@@ -60,6 +58,11 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     let card = await getCard(id);
+    if (!card) {
+      const error = new Error("Card does not exist");
+      error.status = 404;
+      return handleError(res, error.status, error.message);
+    }
     res.send(card);
   } catch (error) {
     handleError(res, error.status || 400, error.message);
@@ -72,7 +75,13 @@ router.put("/:id", auth, async (req, res) => {
     const newCard = req.body;
     const { id } = req.params;
     const fullCardFromDb = await getCard(id);
-    if (userInfo._id !== fullCardFromDb.user_id.toString() && !userInfo.isAdmin) {
+    if (!fullCardFromDb) {
+      const error = new Error("Cannot update card that does not exist");
+      error.status = 404;
+      console.log(error);
+      return handleError(res, error.status, error.message);
+    }
+    if (userInfo._id !== fullCardFromDb.user_id.toString()) {
       return handleError(
         res,
         403,
@@ -98,6 +107,12 @@ router.delete("/:id", auth, async (req, res) => {
     const userInfo = req.user;
     const { id } = req.params;
     const fullCardFromDb = await getCard(id);
+    if (!fullCardFromDb) {
+      const error = new Error("Cannot delete card that does not exist");
+      error.status = 404;
+      console.log(error);
+      return handleError(res, error.status, error.message);
+    }
     if (userInfo._id !== fullCardFromDb.user_id.toString() && !userInfo.isAdmin) {
       return handleError(
         res,
@@ -118,6 +133,12 @@ router.patch("/:id", auth, async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
     let card = await likeCard(id, userId);
+    if (!card) {
+      const error = new Error("Cannot patch card that does not exist");
+      error.status = 404;
+      console.log(error);
+      return handleError(res, error.status, error.message);
+    }
     res.send(card);
   } catch (error) {
     handleError(res, error.status || 400, error.message);

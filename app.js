@@ -6,6 +6,9 @@ const router = require("./router/router");
 const corsMiddleware = require("./middlewares/cors");
 const { handleError } = require("./utils/handleErrors");
 const loggerMiddleware = require("./logger/loggerService");
+const User = require("./users/models/mongodb/User");
+const Card = require("./cards/models/mongodb/Card");
+const { createInitialUsers, createInitialCards } = require("./initialData/initialDataService");
 
 const app = express();
 const PORT = process.env.PORT || 8181;
@@ -24,7 +27,13 @@ app.use((err, req, res, next) => {
   return handleError(res, 500, message);
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(chalk.yellow("app is listening to port " + PORT));
-  connectToDb();
+  await connectToDb();
+  if (await User.countDocuments() === 0) {
+    await createInitialUsers();
+  }
+  if (await Card.countDocuments() === 0) {
+    await createInitialCards();
+  }
 });

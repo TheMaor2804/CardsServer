@@ -1,25 +1,31 @@
-const { createError } = require("../../utils/handleErrors");
+const { createError, handleError } = require("../../utils/handleErrors");
 const Card = require("./mongodb/Card");
-
+const _ = require("lodash");
 const config = require("config");
 const DB = config.get("DB");
 
-const createCard = async (newCard) => {
-  if (DB === "mongodb") {
-    try {
-      let card = new Card(newCard);
-      card = await card.save();
-      return card;
-    } catch (error) {
-      return createError("Mongoose", error);
-    }
+const validateDB = () => {
+  if (DB !== 'mongodb') {
+    const error = new Error('There is no valid database selected to perform this operation');
+    error.status = 500;
+    throw createError("DB", error);
   }
-  const error = new Error("there is no other db for this requests");
-  error.status = 500;
-  return createError("DB", error);
+};
+
+const createCard = async (newCard) => {
+  validateDB();
+  try {
+    let card = new Card(newCard);
+    card = await card.save();
+    newCard = _.pick(card, ['title', 'subtitle', 'description', 'phone', 'email', 'web', 'image', 'address']);
+    return newCard;
+  } catch (error) {
+    return createError("Mongoose", error);
+  }
 };
 
 const getCards = async () => {
+  validateDB();
   try {
     let cards = await Card.find();
     return cards;
@@ -29,6 +35,7 @@ const getCards = async () => {
 };
 
 const getCard = async (cardId) => {
+  validateDB();
   try {
     let card = await Card.findById(cardId);
     return card;
@@ -38,6 +45,7 @@ const getCard = async (cardId) => {
 };
 
 const getMyCards = async (userId) => {
+  validateDB();
   try {
     let cards = await Card.find({ user_id: userId });
     return cards;
@@ -47,6 +55,7 @@ const getMyCards = async (userId) => {
 };
 
 const updateCard = async (cardId, newCard) => {
+  validateDB();
   try {
     let card = await Card.findByIdAndUpdate(cardId, newCard, { new: true });
     return card;
@@ -56,6 +65,7 @@ const updateCard = async (cardId, newCard) => {
 };
 
 const deleteCard = async (cardId) => {
+  validateDB();
   try {
     let card = await Card.findByIdAndDelete(cardId);
     return card;
@@ -65,14 +75,11 @@ const deleteCard = async (cardId) => {
 };
 
 const likeCard = async (cardId, userId) => {
+  validateDB();
   try {
     let card = await Card.findById(cardId);
     if (!card) {
-      const error = new Error(
-        "A card with this ID cannot be found in the database"
-      );
-      error.status = 404;
-      return createError("Mongoose", error);
+      return card;
     }
     if (card.likes.includes(userId)) {
       let newLikesArray = card.likes.filter((id) => id != userId);

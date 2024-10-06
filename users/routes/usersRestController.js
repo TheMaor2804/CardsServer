@@ -13,15 +13,13 @@ const { handleError } = require("../../utils/handleErrors");
 const {
   validateRegistration,
   validateLogin,
+  validateUserUpdate,
 } = require("../validation/userValidationService");
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
-    if (req.body.isAdmin) {
-      return handleError(res, 403, "Authorization Error: You cannot register as Admin ");
-    }
     const error = validateRegistration(req.body);
     if (error) return handleError(res, 400, `Joi Error: ${error}`);
 
@@ -36,7 +34,6 @@ router.post("/login", async (req, res) => {
   try {
     const error = validateLogin(req.body);
     if (error) return handleError(res, 400, `Joi Error: ${error}`);
-
     let { email, password } = req.body;
     const token = await loginUser(email, password);
     res.send(token);
@@ -49,7 +46,6 @@ router.get("/:id", auth, async (req, res) => {
   try {
     const userInfo = req.user;
     const { id } = req.params;
-
     if (userInfo._id !== id && !userInfo.isAdmin) {
       return handleError(
         res,
@@ -59,6 +55,9 @@ router.get("/:id", auth, async (req, res) => {
     }
 
     let user = await getUser(id);
+    if (!user) {
+      return handleError(res, 404, "User with this id was not found");
+    }
     res.send(user);
   } catch (error) {
     return handleError(res, error.status || 400, error.message);
@@ -94,7 +93,7 @@ router.put("/:id", auth, async (req, res) => {
         "Authorization Error: Only the same user can update user info"
       );
     }
-    const error = userUpdateValidation(req.body);
+    const error = validateUserUpdate(updatedUser);
     if (error) return handleError(res, 400, `Joi Error: ${error}`);
     let user = await updateUser(id, updatedUser);
     res.send(user);
@@ -111,6 +110,7 @@ router.patch("/:id", auth, async (req, res) => {
       return handleError(res, 403, "Authorization Error: Only the same user can change business status");
     }
     const user = await changeBusinessStatus(id);
+
     res.send(user);
   } catch (error) {
     return handleError(res, error.status || 400, error.message);

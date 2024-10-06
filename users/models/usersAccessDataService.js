@@ -3,17 +3,24 @@ const _ = require("lodash");
 const User = require("./mongodb/User");
 const { createError } = require("../../utils/handleErrors");
 const { generateUserPassword, comaprePasswords } = require("../helpers/bcrypt");
+const config = require("config");
+const DB = config.get("DB");
+
+const validateDB = () => {
+  if (DB !== 'mongodb') {
+    const error = new Error('There is no valid database selected to perform this operation');
+    error.status = 500;
+    throw createError("DB", error);
+  }
+};
 
 const registerUser = async (newUser) => {
+  validateDB();
   try {
     newUser.password = generateUserPassword(newUser.password);
     let user = new User(newUser);
     user = await user.save();
-    console.log(user);
-
-
-    user = _.pick(user, ["name", "isBusiness", "phone", "email", "password", "address", "image"]);
-
+    user = _.pick(user, ['name', 'email', "_id"]);
     return user;
   } catch (error) {
     return createError("Mongoose", error);
@@ -21,13 +28,9 @@ const registerUser = async (newUser) => {
 };
 
 const getUser = async (userId) => {
+  validateDB();
   try {
-    let user = await User.findById(userId);
-    if (!user) {
-      const error = new Error("User with this id was not found");
-      error.status = 404;
-      return createError("Mongoose", error);
-    }
+    let user = await User.findById(userId).select({ password: 0, __v: 0 });
     return user;
   } catch (error) {
     return createError("Mongoose", error);
@@ -35,13 +38,9 @@ const getUser = async (userId) => {
 };
 
 const getUsers = async () => {
+  validateDB();
   try {
-    let users = await User.find();
-    if (!users) {
-      const error = new Error("No users found");
-      error.status = 404;
-      return createError("Mongoose", error);
-    }
+    let users = await User.find().select({ password: 0, __v: 0 });
     return users;
   } catch (error) {
     return createError("Mongoose", error);
@@ -49,6 +48,7 @@ const getUsers = async () => {
 };
 
 const loginUser = async (email, password) => {
+  validateDB();
   try {
     const userFromDb = await User.findOne({ email });
 
@@ -70,12 +70,13 @@ const loginUser = async (email, password) => {
 };
 
 const updateUser = async (userId, updatedUser) => {
+  validateDB();
   try {
-    let user = await User.findByIdAndUpdate(userId, updatedUser, { new: true });
+    let user = await User.findByIdAndUpdate(userId, updatedUser, { new: true }).select({ password: 0, __v: 0 });
     if (!user) {
       const error = new Error("User with this id was not found");
       error.status = 404;
-      return createError("Mongoose", error);
+      return createError("Internal", error);
     }
     return user;
   } catch (error) {
@@ -84,13 +85,9 @@ const updateUser = async (userId, updatedUser) => {
 };
 
 const changeBusinessStatus = async (userId) => {
+  validateDB();
   try {
-    const user = await User.findById(userId);
-    if (!user) {
-      const error = new Error("User with this id was not found");
-      error.status = 404;
-      return createError("Mongoose", error);
-    }
+    const user = await User.findById(userId).select({ password: 0, __v: 0 });
     user.isBusiness = !user.isBusiness;
     await user.save();
     return user;
@@ -101,19 +98,18 @@ const changeBusinessStatus = async (userId) => {
 };
 
 const deleteUser = async (userId) => {
+  validateDB();
   try {
-    const user = await User.findByIdAndDelete(userId);
+    const user = await User.findByIdAndDelete(userId).select({ password: 0, __v: 0 });
     if (!user) {
       const error = new Error("User with this id was not found");
       error.status = 404;
-      return createError("Mongoose", error);
+      return createError("Internal", error);
     }
     return user;
   } catch (error) {
     return createError("Mongoose", error);
   }
 };
-
-
 
 module.exports = { registerUser, getUser, getUsers, loginUser, updateUser, changeBusinessStatus, deleteUser };

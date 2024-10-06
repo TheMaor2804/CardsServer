@@ -34,7 +34,6 @@ const userUpdateValidation = (user) => {
                 zip: Joi.number(),
             })
             .required(),
-        isBusiness: Joi.boolean().required(),
     });
     return schema.validate(user);
 };
