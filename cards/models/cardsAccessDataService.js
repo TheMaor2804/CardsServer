@@ -17,8 +17,7 @@ const createCard = async (newCard) => {
   try {
     let card = new Card(newCard);
     card = await card.save();
-    newCard = _.pick(card, ['title', 'subtitle', 'description', 'phone', 'email', 'web', 'image', 'address']);
-    return newCard;
+    return card;
   } catch (error) {
     return createError("Mongoose", error);
   }

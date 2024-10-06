@@ -72,7 +72,7 @@ const loginUser = async (email, password) => {
 const updateUser = async (userId, updatedUser) => {
   validateDB();
   try {
-    let user = await User.findByIdAndUpdate(userId, updatedUser, { new: true }).select({ password: 0, __v: 0 });
+    let user = await User.findByIdAndUpdate(userId, updatedUser, { new: true });
     if (!user) {
       const error = new Error("User with this id was not found");
       error.status = 404;
@@ -100,7 +100,7 @@ const changeBusinessStatus = async (userId) => {
 const deleteUser = async (userId) => {
   validateDB();
   try {
-    const user = await User.findByIdAndDelete(userId).select({ password: 0, __v: 0 });
+    const user = await User.findByIdAndDelete(userId);
     if (!user) {
       const error = new Error("User with this id was not found");
       error.status = 404;
