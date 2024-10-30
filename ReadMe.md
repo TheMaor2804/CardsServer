@@ -39,4 +39,7 @@ This is a Node.js server using Express to manage a database of users and busines
 
 1. Clone the repository
    ```sh
-   git clone https://github.com/yourusername/business-card-manager.git
+   git clone https://github.com/TheMaor2804/MyCardsProject.git```
+
+2.Install dependencies
+
