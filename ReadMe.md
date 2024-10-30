@@ -46,10 +46,19 @@ This is a Node.js server using Express to manage a database of users and busines
     cd CardsServer
     npm install
 
-3. Set up environment variables
+3. Set up environment variables:
     Create a .env file in the root directory
     Ensure you set the following variables:
     ```sh
     JWT_SECRET=your_jwt_secret
     ATLAS_CONNECTION_STRING=your_atlas_mongodb_connection_string
     PORT=your_server_port
+
+4. Start the server:
+    Development:
+    ```sh
+    npm run dev
+
+    Production:
+    ```sh
+    npm start
