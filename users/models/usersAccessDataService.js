@@ -31,6 +31,11 @@ const getUser = async (userId) => {
   validateDB();
   try {
     let user = await User.findById(userId).select({ password: 0, __v: 0 });
+    if (!user) {
+      const error = new Error("User with this id was not found");
+      error.status = 404;
+      return createError("Internal", error);
+    }
     return user;
   } catch (error) {
     return createError("Mongoose", error);
@@ -51,6 +56,7 @@ const loginUser = async (email, password) => {
   validateDB();
   try {
     const userFromDb = await User.findOne({ email });
+
     if (!userFromDb) {
       const error = new Error("Invalid email or password");
       error.status = 401;
@@ -64,8 +70,6 @@ const loginUser = async (email, password) => {
     const token = generateAuthToken(userFromDb);
     return token;
   } catch (error) {
-    console.log(error);
-
     return createError("Mongoose", error);
   }
 };

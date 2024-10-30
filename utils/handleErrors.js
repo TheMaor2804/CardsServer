@@ -3,7 +3,7 @@ const chalk = require("chalk");
 const createError = (validator, error) => {
   error.message = `${validator} Error: ${error.message}`;
   error.status = error.status || 400;
-  throw new Error(error);
+  throw error;
 };
 
 const handleError = (res, status, message = "") => {

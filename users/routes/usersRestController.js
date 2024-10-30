@@ -55,9 +55,6 @@ router.get("/:id", auth, async (req, res) => {
     }
 
     let user = await getUser(id);
-    if (!user) {
-      return handleError(res, 404, "User with this id was not found");
-    }
     res.send(user);
   } catch (error) {
     return handleError(res, error.status || 400, error.message);
