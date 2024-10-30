@@ -39,7 +39,15 @@ This is a Node.js server using Express to manage a database of users and busines
 
 1. Clone the repository
    ```sh
-   git clone https://github.com/TheMaor2804/MyCardsProject.git```
+   git clone https://github.com/TheMaor2804/CardsServer.git```
 
 2.Install dependencies
+    ```cd CardsServer
+    npm install```
 
+3.Set up environment variables
+    Create a .env file in the root directory
+    Ensure you set the following variables:
+    ```JWT_SECRET=your_jwt_secret
+    ATLAS_CONNECTION_STRING=your_atlas_mongodb_connection_string
+    PORT=your_server_port```
