@@ -69,8 +69,8 @@ This is a Node.js server using Express to manage a database of users and busines
     ```    
 
 ## API Documentation
-    For detailed API documentation and examples, refer to the Postman collections:
+For detailed API documentation and examples, refer to the Postman collections:
 
-    Cards API Documentation: https://documenter.getpostman.com/view/37786987/2sAY4vgNWe
+- Cards API Documentation: https://documenter.getpostman.com/view/37786987/2sAY4vgNWe
 
-    Users API Documentation: https://documenter.getpostman.com/view/37786987/2sAY4vgNbA
+- Users API Documentation: https://documenter.getpostman.com/view/37786987/2sAY4vgNbA
