@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node app.js",
     "test": "echo \"Error: no test specified\" && exit 0",
-    "dev": "cross-env NODE_ENV=development nodemon app"
+    "dev": "cross-env NODE_ENV=development node app"
   },
   "keywords": [],
   "author": "",
