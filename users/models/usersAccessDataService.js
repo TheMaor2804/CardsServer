@@ -2,7 +2,7 @@ const { generateAuthToken } = require("../../auth/providers/jwt");
 const _ = require("lodash");
 const User = require("./mongodb/User");
 const { createError } = require("../../utils/handleErrors");
-const { generateUserPassword, comaprePasswords } = require("../helpers/bcrypt");
+const { generateUserPassword, comparePasswords } = require("../helpers/bcrypt");
 const config = require("config");
 const DB = config.get("DB");
 
@@ -51,13 +51,12 @@ const loginUser = async (email, password) => {
   validateDB();
   try {
     const userFromDb = await User.findOne({ email });
-
     if (!userFromDb) {
       const error = new Error("Invalid email or password");
       error.status = 401;
       return createError("Authentication", error);
     }
-    if (!comaprePasswords(password, userFromDb.password)) {
+    if (!comparePasswords(password, userFromDb.password)) {
       const error = new Error("Invalid email or password");
       error.status = 401;
       return createError("Authentication", error);
@@ -65,6 +64,8 @@ const loginUser = async (email, password) => {
     const token = generateAuthToken(userFromDb);
     return token;
   } catch (error) {
+    console.log(error);
+
     return createError("Mongoose", error);
   }
 };
