@@ -3,21 +3,26 @@
 This is a Node.js server using Express to manage a database of users and business cards. It includes features like user registration, business card management, and user roles with different permissions.
 
 ## Features
-- All users can view all cards
-- User registration and login
-- Users can view and like cards
-- Users can update their own information
-- Users can toggle their own business status
-- Users can delete their own account
-- Users can retrieve their created cards
-- Business user role with enhanced permissions
-- Business users can delete and update their own cards
-- Admins can toggle business status for all users
-- Admins can view all users
-- Admins can delete all accounts
-- Admins can delete and update all cards
-- Admins can change card's bizNumber
-- Admins can update all user information
+- Card Management
+    - All users can view all cards
+- User Management
+    - User registration and login
+    - Users can view and like cards
+    - Users can update their own information
+    - Users can toggle their own business status
+    - Users can delete their own account
+    - Users can retrieve their created cards
+- User Roles and Permissions:
+    - Business Users:
+        - Business user role with enhanced permissions
+        - Business users can delete and update their own cards
+    - Admins
+        - Admins can toggle business status for all users
+        - Admins can view all users
+        - Admins can delete all accounts
+        - Admins can delete and update all cards
+        - Admins can change card's bizNumber
+        - Admins can update all user information
 
 ## Technologies Used
 - Express
@@ -68,6 +73,11 @@ This is a Node.js server using Express to manage a database of users and busines
     ```sh
     npm start
     ```    
+
+## Database Requirements
+- MongoDB server running on port 27017 is required during development and production.
+- The application will create a database named maorCardsServer upon startup if it doesn't exist. This database will store all business card and user data.
+- If the cards and users collections within this database are empty, the application will generate initial data.
 
 ## API Documentation
 For detailed API documentation and examples, refer to the Postman collections:

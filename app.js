@@ -32,8 +32,10 @@ app.listen(PORT, async () => {
   await connectToDb();
   if (await User.countDocuments() === 0) {
     await createInitialUsers();
+    console.log(chalk.green("Initial users created"));
   }
   if (await Card.countDocuments() === 0) {
     await createInitialCards();
+    console.log(chalk.green("Initial cards created"));
   }
 });
