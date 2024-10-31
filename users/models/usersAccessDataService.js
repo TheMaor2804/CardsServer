@@ -34,7 +34,7 @@ const getUser = async (userId) => {
     if (!user) {
       const error = new Error("User with this id was not found");
       error.status = 404;
-      return createError("Internal", error);
+      throw error;
     }
     return user;
   } catch (error) {
@@ -56,21 +56,22 @@ const loginUser = async (email, password) => {
   validateDB();
   try {
     const userFromDb = await User.findOne({ email });
-
     if (!userFromDb) {
       const error = new Error("Invalid email or password");
       error.status = 401;
-      return createError("Authentication", error);
+      error.name = "Authentication";
+      throw error;
     }
     if (!comparePasswords(password, userFromDb.password)) {
       const error = new Error("Invalid email or password");
       error.status = 401;
-      return createError("Authentication", error);
+      error.name = "Authentication";
+      throw error;
     }
     const token = generateAuthToken(userFromDb);
     return token;
   } catch (error) {
-    return createError("Mongoose", error);
+    return createError(error.name, error);
   }
 };
 
@@ -81,11 +82,12 @@ const updateUser = async (userId, updatedUser) => {
     if (!user) {
       const error = new Error("User with this id was not found");
       error.status = 404;
-      return createError("Internal", error);
+      error.name = "Internal";
+      throw error;
     }
     return user;
   } catch (error) {
-    return createError("Mongoose", error);
+    return createError(error.name, error);
   }
 };
 
@@ -98,7 +100,6 @@ const changeBusinessStatus = async (userId) => {
     return user;
   } catch (error) {
     return createError("Mongoose", error);
-
   }
 };
 
@@ -109,11 +110,12 @@ const deleteUser = async (userId) => {
     if (!user) {
       const error = new Error("User with this id was not found");
       error.status = 404;
-      return createError("Internal", error);
+      error.name = "Internal";
+      throw error;
     }
     return user;
   } catch (error) {
-    return createError("Mongoose", error);
+    return createError(error.name, error);
   }
 };
 
