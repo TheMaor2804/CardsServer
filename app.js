@@ -30,12 +30,4 @@ app.use((err, req, res, next) => {
 app.listen(PORT, async () => {
   console.log(chalk.yellow("app is listening to port " + PORT));
   await connectToDb();
-  if (await User.countDocuments() === 0) {
-    await createInitialUsers();
-    console.log(chalk.green("Initial users created"));
-  }
-  if (await Card.countDocuments() === 0) {
-    await createInitialCards();
-    console.log(chalk.green("Initial cards created"));
-  }
 });
