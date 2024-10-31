@@ -38,6 +38,11 @@ This is a Node.js server using Express to manage a database of users and busines
 - Mongoose
 - Morgan
 
+## Database Requirements
+- MongoDB server running on port 27017 is required during development and production.
+- The application will create a database named maorCardsServer upon startup if it doesn't exist. This database will store all business card and user data.
+- If the cards and users collections within this database are empty, the application will generate initial data, only if the server is running in development.
+
 ## Installation
 
 1. Clone the repository
@@ -74,10 +79,16 @@ This is a Node.js server using Express to manage a database of users and busines
     npm start
     ```    
 
-## Database Requirements
-- MongoDB server running on port 27017 is required during development and production.
-- The application will create a database named maorCardsServer upon startup if it doesn't exist. This database will store all business card and user data.
-- If the cards and users collections within this database are empty, the application will generate initial data.
+## Initial User Accounts for Testing (Local Development Only)
+
+Warning: The following initial user accounts are intended for local development purposes only.
+
+
+| Email | Password |
+|----------------|----------------|
+|regular@gmail.com|Aa123456!|
+|business@gmail.com|Aa123456!|
+|admin@gmail.com|Abc!123Abc|
 
 ## API Documentation
 For detailed API documentation and examples, refer to the Postman collections:
