@@ -95,19 +95,19 @@ const likeCard = async (cardId, userId) => {
 
 const changeBizNumber = async (cardId, newBizNumber) => {
   validateDB();
+  if (String(newBizNumber).length !== 7) {
+    const error = new Error("Business number must be 7 digits long");
+    error.status = 400;
+    throw createError("Mongoose", error);
+  }
   try {
-    if (String(newBizNumber).length !== 7) {
-      const error = new Error("Business number must be 7 digits long");
-      error.status = 400;
-      return createError("Mongoose", error);
-    }
     let card = await Card.findById(cardId);
     if (!card) {
       return card;
     }
-    const existingCard = await Card.findOne({ newBizNumber });
+    const existingCard = await Card.findOne({ bizNumber: newBizNumber });
     if (existingCard) {
-      return createError("Mongoose", new Error("Business number already exists"));
+      throw new Error("Business number already exists");
     }
     card.bizNumber = newBizNumber;
     await card.save();
