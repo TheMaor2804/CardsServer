@@ -7,6 +7,7 @@ const {
   updateCard,
   deleteCard,
   likeCard,
+  changeBizNumber,
 } = require("../models/cardsAccessDataService");
 const auth = require("../../auth/authService");
 const { normalizeCard } = require("../helpers/normalizeCard");
@@ -78,7 +79,6 @@ router.put("/:id", auth, async (req, res) => {
     if (!fullCardFromDb) {
       const error = new Error("Cannot update card that does not exist");
       error.status = 404;
-      console.log(error);
       return handleError(res, error.status, error.message);
     }
     if (userInfo._id !== fullCardFromDb.user_id.toString()) {
@@ -110,7 +110,6 @@ router.delete("/:id", auth, async (req, res) => {
     if (!fullCardFromDb) {
       const error = new Error("Cannot delete card that does not exist");
       error.status = 404;
-      console.log(error);
       return handleError(res, error.status, error.message);
     }
     if (userInfo._id !== fullCardFromDb.user_id.toString() && !userInfo.isAdmin) {
@@ -132,11 +131,23 @@ router.patch("/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user._id;
+    const bizNumber = req.body.bizNumber;
+    if (bizNumber) {
+      if (!req.user.isAdmin) {
+        return handleError(res, 403, "Only admin can change bizNumber");
+      }
+      let card = await changeBizNumber(id, bizNumber);
+      if (!card) {
+        const error = new Error("Cannot patch card that does not exist");
+        error.status = 404;
+        return handleError(res, error.status, error.message);
+      }
+      return res.send(card);
+    }
     let card = await likeCard(id, userId);
     if (!card) {
       const error = new Error("Cannot patch card that does not exist");
       error.status = 404;
-      console.log(error);
       return handleError(res, error.status, error.message);
     }
     res.send(card);

@@ -16,6 +16,7 @@ This is a Node.js server using Express to manage a database of users and busines
 - Admins can view all users
 - Admins can delete all accounts
 - Admins can delete and update all cards
+- Admins can change card's bizNumber
 - Admins can update all user information
 
 ## Technologies Used
